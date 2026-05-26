@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+native/build/
+Nuklear.Net.Native/runtimes/
+*.user
+*.suo
+.vs/

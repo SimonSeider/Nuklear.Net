@@ -1,0 +1,72 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="Build/NuklearNative.Build.targets" />
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>Nuklear.Net.Native</RootNamespace>
+    <NoWarn>$(NoWarn);CA2255</NoWarn>
+    <RuntimeIdentifiers>win-x64;win-arm64;linux-x64;linux-arm64;osx-x64;osx-arm64</RuntimeIdentifiers>
+    <BuildNuklearNative Condition="'$(BuildNuklearNative)' == ''">false</BuildNuklearNative>
+    <GenerateNuklearBindings Condition="'$(GenerateNuklearBindings)' == ''">false</GenerateNuklearBindings>
+    <SkipNativeRuntimeValidation Condition="'$(SkipNativeRuntimeValidation)' == ''">false</SkipNativeRuntimeValidation>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildProjectDirectory)\..'))</RepoRoot>
+    <NativeSourceDir>$(RepoRoot)/native</NativeSourceDir>
+    <NativeBuildDir>$(NativeSourceDir)/build/$(NuklearNativeRid)</NativeBuildDir>
+    <NativeRuntimeRoot>$(MSBuildProjectDirectory)/runtimes</NativeRuntimeRoot>
+    <NativeRuntimeDir>$(NativeRuntimeRoot)/$(NuklearNativeRid)/native</NativeRuntimeDir>
+    <NativeRuntimePath>$(NativeRuntimeDir)/$(NuklearNativeLibFileName)</NativeRuntimePath>
+    <_NuklearNativeProjectRoot>$(MSBuildProjectDirectory)</_NuklearNativeProjectRoot>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CppSharp.Runtime" Version="1.1.84.17100" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Nuklear.Net" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="buildTransitive/**">
+      <Pack>true</Pack>
+      <PackagePath>buildTransitive/%(RecursiveDir)%(Filename)%(Extension)</PackagePath>
+    </Content>
+    <Content Include="runtimes/**" Condition="Exists('runtimes')">
+      <Pack>true</Pack>
+      <PackagePath>%(Identity)</PackagePath>
+    </Content>
+  </ItemGroup>
+
+  <Target Name="ValidateNativeRuntime"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="ResolveNuklearNativeRid"
+          Condition="'$(SkipNativeRuntimeValidation)' != 'true'">
+    <Error Condition="!Exists('$(NativeRuntimePath)')"
+           Text="Missing native runtime '$(NativeRuntimePath)'. Build it with scripts/build-native.sh or scripts/build-native.ps1, or run the GitHub Actions workflow." />
+  </Target>
+
+  <Target Name="BuildNativeLibrary"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="ResolveNuklearNativeRid"
+          Condition="'$(BuildNuklearNative)' == 'true'">
+    <Exec Command="&quot;$(RepoRoot)/scripts/build-native.sh&quot; $(NuklearNativeRid)"
+          Condition="$([MSBuild]::IsOSPlatform('Linux')) OR $([MSBuild]::IsOSPlatform('OSX'))" />
+    <Exec Command="pwsh -NoProfile -File &quot;$(RepoRoot)/scripts/build-native.ps1&quot; -Rid $(NuklearNativeRid)"
+          Condition="$([MSBuild]::IsOSPlatform('Windows'))" />
+  </Target>
+
+  <Target Name="GenerateBindings"
+          BeforeTargets="BeforeBuild"
+          DependsOnTargets="ValidateNativeRuntime"
+          Condition="'$(GenerateNuklearBindings)' == 'true'">
+    <Exec Command="dotnet run --project &quot;$(RepoRoot)/Nuklear.Net.NativeGen/Nuklear.Net.NativeGen.csproj&quot;" />
+  </Target>
+
+</Project>

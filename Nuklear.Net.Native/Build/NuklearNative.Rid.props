@@ -1,0 +1,28 @@
+<Project>
+
+  <PropertyGroup>
+    <NuklearNativeRid Condition="'$(NuklearNativeRid)' == '' AND '$(RuntimeIdentifier)' != ''">$(RuntimeIdentifier)</NuklearNativeRid>
+    <_NuklearHostOs Condition="$([MSBuild]::IsOSPlatform('Windows'))">win</_NuklearHostOs>
+    <_NuklearHostOs Condition="$([MSBuild]::IsOSPlatform('Linux'))">linux</_NuklearHostOs>
+    <_NuklearHostOs Condition="$([MSBuild]::IsOSPlatform('OSX'))">osx</_NuklearHostOs>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(_NuklearHostOs)' == 'win'">
+    <_NuklearHostArch Condition="'$(PROCESSOR_ARCHITECTURE)' == 'AMD64' OR '$(PROCESSOR_ARCHITECTURE)' == 'x64'">x64</_NuklearHostArch>
+    <_NuklearHostArch Condition="'$(PROCESSOR_ARCHITECTURE)' == 'ARM64'">arm64</_NuklearHostArch>
+    <_NuklearHostArch Condition="'$(_NuklearHostArch)' == ''">x64</_NuklearHostArch>
+    <NuklearNativeRid Condition="'$(NuklearNativeRid)' == ''">win-$(_NuklearHostArch)</NuklearNativeRid>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(NuklearNativeRid)' == '' AND '$(_NuklearHostOs)' != 'win'">
+    <_NuklearHostArch>x64</_NuklearHostArch>
+    <NuklearNativeRid>$(_NuklearHostOs)-$(_NuklearHostArch)</NuklearNativeRid>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <NuklearNativeLibFileName Condition="$([MSBuild]::IsOSPlatform('Windows'))">NuklearNetNative.dll</NuklearNativeLibFileName>
+    <NuklearNativeLibFileName Condition="$([MSBuild]::IsOSPlatform('OSX'))">libNuklearNetNative.dylib</NuklearNativeLibFileName>
+    <NuklearNativeLibFileName Condition="'$(NuklearNativeLibFileName)' == ''">libNuklearNetNative.so</NuklearNativeLibFileName>
+  </PropertyGroup>
+
+</Project>

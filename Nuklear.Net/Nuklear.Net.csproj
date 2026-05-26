@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <RootNamespace>Nuklear.Net</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Nuklear.Net.Native\Nuklear.Net.Native.csproj" />
+  </ItemGroup>
+
+  <Import Project="..\Nuklear.Net.Native\buildTransitive\$(TargetFramework)\Nuklear.Net.Native.targets"
+          Condition="Exists('..\Nuklear.Net.Native\buildTransitive\$(TargetFramework)\Nuklear.Net.Native.targets')" />
+
+</Project>

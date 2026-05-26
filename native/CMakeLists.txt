@@ -1,0 +1,30 @@
+cmake_minimum_required(VERSION 3.16)
+project(NuklearNetNative C)
+
+set(NUKLEAR_SRC_DIR "${CMAKE_CURRENT_SOURCE_DIR}/nuklear/src")
+
+add_compile_definitions(
+    NK_INCLUDE_FIXED_TYPES
+    NK_INCLUDE_STANDARD_IO
+    NK_INCLUDE_STANDARD_VARARGS
+    NK_INCLUDE_DEFAULT_ALLOCATOR
+    NK_INCLUDE_STANDARD_BOOL
+    NK_INCLUDE_VERTEX_BUFFER_OUTPUT
+    NK_INCLUDE_FONT_BAKING
+    NK_INCLUDE_DEFAULT_FONT
+    NK_KEYSTATE_BASED_INPUT
+)
+
+file(GLOB NUKLEAR_SOURCES "${NUKLEAR_SRC_DIR}/nuklear_*.c")
+
+add_library(NuklearNetNative SHARED ${NUKLEAR_SOURCES})
+target_include_directories(NuklearNetNative PUBLIC "${NUKLEAR_SRC_DIR}")
+set_target_properties(NuklearNetNative PROPERTIES
+    C_STANDARD 99
+    C_STANDARD_REQUIRED ON
+    POSITION_INDEPENDENT_CODE ON
+)
+
+if(UNIX AND NOT APPLE)
+    target_link_libraries(NuklearNetNative PRIVATE m)
+endif()

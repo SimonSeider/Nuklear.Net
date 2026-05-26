@@ -1,0 +1,5 @@
+<Project>
+
+  <Import Project="$(MSBuildThisFileDirectory)../Nuklear.Net.Native/buildTransitive/net10.0/Nuklear.Net.Native.targets" />
+
+</Project>

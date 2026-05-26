@@ -1,0 +1,11 @@
+<Solution>
+  <Project Path="Nuklear.Net/Nuklear.Net.csproj" />
+  <Project Path="Nuklear.Net.Native/Nuklear.Net.Native.csproj" />
+  <Project Path="Nuklear.Net.NativeGen/Nuklear.Net.NativeGen.csproj" />
+  <Folder Name="/Examples/">
+    <Project Path="Examples/Nuklear.Net.Examples.Common/Nuklear.Net.Examples.Common.csproj" />
+    <Project Path="Examples/SilkNet/Nuklear.Net.Examples.SilkNet.csproj" />
+    <Project Path="Examples/OpenTK/Nuklear.Net.Examples.OpenTK.csproj" />
+    <Project Path="Examples/MonoGame/Nuklear.Net.Examples.MonoGame.csproj" />
+  </Folder>
+</Solution>

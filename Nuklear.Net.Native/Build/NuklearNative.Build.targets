@@ -1,0 +1,48 @@
+<Project>
+
+  <Import Project="$(MSBuildThisFileDirectory)NuklearNative.Rid.props" />
+
+  <Target Name="ResolveNuklearNativeRid" BeforeTargets="ValidateNativeRuntime;CopyNuklearNativeRuntimeToOutput">
+    <PropertyGroup Condition="'$(NuklearNativeRid)' == '' OR '$(NuklearNativeRid)' == '$(_NuklearHostOs)-x64'">
+      <_NuklearNeedsArchDetection>true</_NuklearNeedsArchDetection>
+    </PropertyGroup>
+
+    <Exec Command="uname -m"
+          StandardOutputImportance="Low"
+          ConsoleToMSBuild="true"
+          Condition="'$(_NuklearNeedsArchDetection)' == 'true' AND '$(_NuklearHostOs)' != 'win'">
+      <Output TaskParameter="ConsoleOutput" PropertyName="_NuklearMachine" />
+    </Exec>
+
+    <PropertyGroup Condition="'$(_NuklearNeedsArchDetection)' == 'true' AND '$(_NuklearHostOs)' != 'win'">
+      <_NuklearHostArch Condition="$(_NuklearMachine.Contains('aarch64')) OR $(_NuklearMachine.Contains('arm64'))">arm64</_NuklearHostArch>
+      <_NuklearHostArch Condition="'$(_NuklearHostArch)' == '' AND $(_NuklearMachine.Contains('x86_64'))">x64</_NuklearHostArch>
+      <_NuklearHostArch Condition="'$(_NuklearHostArch)' == '' AND $(_NuklearMachine.Contains('amd64'))">x64</_NuklearHostArch>
+      <_NuklearHostArch Condition="'$(_NuklearHostArch)' == ''">x64</_NuklearHostArch>
+      <NuklearNativeRid>$(_NuklearHostOs)-$(_NuklearHostArch)</NuklearNativeRid>
+    </PropertyGroup>
+  </Target>
+
+  <Target Name="CopyNuklearNativeRuntimeToOutput"
+          BeforeTargets="CopyFilesToOutputDirectory"
+          DependsOnTargets="ResolveNuklearNativeRid"
+          Condition="'$(TargetFramework)' != ''">
+
+    <PropertyGroup>
+      <_NuklearNativeProjectRoot Condition="'$(_NuklearNativeProjectRoot)' == ''">$(MSBuildThisFileDirectory)..</_NuklearNativeProjectRoot>
+      <_NuklearNativeRuntimeSourceDir>$(_NuklearNativeProjectRoot)/runtimes/$(NuklearNativeRid)/native</_NuklearNativeRuntimeSourceDir>
+      <_NuklearNativeRuntimeOutputDir>$(OutputPath)runtimes/$(NuklearNativeRid)/native</_NuklearNativeRuntimeOutputDir>
+    </PropertyGroup>
+
+    <ItemGroup Condition="Exists('$(_NuklearNativeRuntimeSourceDir)')">
+      <_NuklearNativeRuntimeFile Include="$(_NuklearNativeRuntimeSourceDir)/*.*" />
+    </ItemGroup>
+
+    <MakeDir Directories="$(_NuklearNativeRuntimeOutputDir)" Condition="'@(_NuklearNativeRuntimeFile)' != ''" />
+    <Copy SourceFiles="@(_NuklearNativeRuntimeFile)"
+          DestinationFolder="$(_NuklearNativeRuntimeOutputDir)"
+          SkipUnchangedFiles="true"
+          Condition="'@(_NuklearNativeRuntimeFile)' != ''" />
+  </Target>
+
+</Project>

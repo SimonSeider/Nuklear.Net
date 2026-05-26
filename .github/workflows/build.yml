@@ -1,0 +1,103 @@
+name: Build
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+env:
+  DOTNET_VERSION: "10.0.x"
+
+jobs:
+  build-native:
+    name: native (${{ matrix.rid }})
+    runs-on: ${{ matrix.runner }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - rid: linux-x64
+            runner: ubuntu-latest
+          - rid: linux-arm64
+            runner: ubuntu-24.04-arm
+          - rid: osx-x64
+            runner: macos-latest
+          - rid: osx-arm64
+            runner: macos-latest
+          - rid: win-x64
+            runner: windows-latest
+          - rid: win-arm64
+            runner: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build native library (Unix)
+        if: runner.os != 'Windows'
+        shell: bash
+        run: ./scripts/build-native.sh "${{ matrix.rid }}"
+
+      - name: Build native library (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/build-native.ps1 -Rid "${{ matrix.rid }}"
+
+      - name: Upload runtime artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: runtime-${{ matrix.rid }}
+          path: Nuklear.Net.Native/runtimes/${{ matrix.rid }}/
+          if-no-files-found: error
+
+  build-dotnet:
+    name: dotnet
+    needs: build-native
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download all native runtimes
+        uses: actions/download-artifact@v4
+        with:
+          pattern: runtime-*
+          path: artifact-runtimes
+
+      - name: Layout native runtimes
+        shell: bash
+        run: |
+          shopt -s nullglob
+          for artifact_dir in artifact-runtimes/runtime-*; do
+            rid="${artifact_dir##*/runtime-}"
+            mkdir -p "Nuklear.Net.Native/runtimes/${rid}"
+            cp -R "${artifact_dir}/." "Nuklear.Net.Native/runtimes/${rid}/"
+          done
+          find Nuklear.Net.Native/runtimes -type f
+
+      - name: Build Nuklear.Net.Native
+        run: dotnet build Nuklear.Net.Native/Nuklear.Net.Native.csproj --configuration Release
+
+      - name: Build Nuklear.Net
+        run: dotnet build Nuklear.Net/Nuklear.Net.csproj --configuration Release
+
+      - name: Pack Nuklear.Net.Native
+        run: dotnet pack Nuklear.Net.Native/Nuklear.Net.Native.csproj --configuration Release --output artifacts
+
+      - name: Pack Nuklear.Net
+        run: dotnet pack Nuklear.Net/Nuklear.Net.csproj --configuration Release --output artifacts
+
+      - name: Upload NuGet package
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts/*.nupkg
