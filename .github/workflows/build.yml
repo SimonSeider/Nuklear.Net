@@ -91,13 +91,52 @@ jobs:
         run: dotnet build Nuklear.Net/Nuklear.Net.csproj --configuration Release
 
       - name: Pack Nuklear.Net.Native
-        run: dotnet pack Nuklear.Net.Native/Nuklear.Net.Native.csproj --configuration Release --output artifacts
+        run: >
+          dotnet pack Nuklear.Net.Native/Nuklear.Net.Native.csproj
+          --configuration Release
+          --output artifacts
+          -p:RepositoryUrl=${{ github.server_url }}/${{ github.repository }}
 
       - name: Pack Nuklear.Net
-        run: dotnet pack Nuklear.Net/Nuklear.Net.csproj --configuration Release --output artifacts
+        run: >
+          dotnet pack Nuklear.Net/Nuklear.Net.csproj
+          --configuration Release
+          --output artifacts
+          -p:RepositoryUrl=${{ github.server_url }}/${{ github.repository }}
 
-      - name: Upload NuGet package
+      - name: Upload NuGet packages
         uses: actions/upload-artifact@v4
         with:
           name: nuget-packages
           path: artifacts/*.nupkg
+
+  publish:
+    name: publish
+    needs: build-dotnet
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    permissions:
+      packages: write
+
+    steps:
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Download NuGet packages
+        uses: actions/download-artifact@v4
+        with:
+          name: nuget-packages
+          path: artifacts
+
+      - name: Add GitHub Packages source
+        run: |
+          dotnet nuget add source \
+            --username ${{ github.actor }} \
+            --password ${{ secrets.GITHUB_TOKEN }} \
+            --store-password-in-clear-text \
+            --name github \
+            "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
+
+      - name: Publish packages
+        run: dotnet nuget push "artifacts/*.nupkg" --source "github" --skip-duplicate

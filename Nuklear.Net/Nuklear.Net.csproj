@@ -8,6 +8,15 @@
     <RootNamespace>Nuklear.Net</RootNamespace>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <PackageId>Nuklear.Net</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>SimonSeider</Authors>
+    <Description>.NET bindings for the Nuklear immediate-mode GUI library.</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <RepositoryType>git</RepositoryType>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\Nuklear.Net.Native\Nuklear.Net.Native.csproj" />
   </ItemGroup>
