@@ -21,6 +21,8 @@
     <Authors>SimonSeider</Authors>
     <Description>Native Nuklear immediate-mode GUI library bindings for .NET, including prebuilt runtimes for all supported platforms.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <License>$(PackageLicenseExpression)</License>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
