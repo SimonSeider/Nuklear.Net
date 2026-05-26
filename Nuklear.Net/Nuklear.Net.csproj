@@ -14,8 +14,8 @@
     <Authors>SimonSeider</Authors>
     <Description>.NET bindings for the Nuklear immediate-mode GUI library.</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <License>$(PackageLicenseExpression)</License>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <PackageTags>nuklear;imgui;immediate-mode;gui;ui;bindings;native;interop;pinvoke</PackageTags>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
