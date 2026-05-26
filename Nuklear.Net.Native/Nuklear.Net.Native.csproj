@@ -20,7 +20,7 @@
     <Version>1.0.0</Version>
     <Authors>SimonSeider</Authors>
     <Description>Native Nuklear immediate-mode GUI library bindings for .NET, including prebuilt runtimes for all supported platforms.</Description>
-    <PackageReadmeFile>../README.md</PackageReadmeFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 
@@ -40,6 +40,10 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="Nuklear.Net" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="../README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
