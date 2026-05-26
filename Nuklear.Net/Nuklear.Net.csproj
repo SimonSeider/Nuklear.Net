@@ -27,6 +27,10 @@
     <ProjectReference Include="..\Nuklear.Net.Native\Nuklear.Net.Native.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Nuklear.Net.Native" Version="1.0.0" />
+  </ItemGroup>
+
   <Import Project="..\Nuklear.Net.Native\buildTransitive\$(TargetFramework)\Nuklear.Net.Native.targets"
           Condition="Exists('..\Nuklear.Net.Native\buildTransitive\$(TargetFramework)\Nuklear.Net.Native.targets')" />
 
