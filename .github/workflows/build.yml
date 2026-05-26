@@ -138,5 +138,8 @@ jobs:
             --name github \
             "https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json"
 
-      - name: Publish packages
-        run: dotnet nuget push "artifacts/*.nupkg" --source "github" --skip-duplicate
+      - name: Publish Nuklear.Net.Native
+        run: dotnet nuget push "artifacts/Nuklear.Net.Native.*.nupkg" --source "github" --skip-duplicate --timeout 900
+
+      - name: Publish Nuklear.Net
+        run: dotnet nuget push "artifacts/Nuklear.Net.*.nupkg" --source "github" --skip-duplicate --timeout 1200
