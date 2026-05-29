@@ -114,3 +114,13 @@ dotnet run --project Nuklear.Net.NativeGen/Nuklear.Net.NativeGen.csproj
 ```
 
 Requires the native build for the host RID to already exist. Output is written to `Nuklear.Net.Native/Generated/`.
+
+## Star History
+
+<a href="https://www.star-history.com/?repos=SimonSeider%2FNuklear.Net&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=SimonSeider/Nuklear.Net&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=SimonSeider/Nuklear.Net&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=SimonSeider/Nuklear.Net&type=date&legend=top-left" />
+ </picture>
+</a>
